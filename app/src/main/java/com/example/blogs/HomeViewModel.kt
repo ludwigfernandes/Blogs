@@ -1,15 +1,12 @@
 package com.example.blogs
 
 import android.app.Application
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import retrofit2.Callback
 import com.example.blogs.data.Articles
 import com.example.blogs.data.ArticlesItem
 import com.example.blogs.network.NetworkUtils
@@ -19,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -62,16 +60,21 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     }
 
     fun cleanHTMLContent(content: String?): String {
+        //Apache Commons Lang to unescape HTML entities in a string.
         val title = StringEscapeUtils.unescapeHtml4(content)
         return title
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun formatDate(dateString: String?): String {
+        //the format of the passed date
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        //parsing the value
         val dateTime = LocalDateTime.parse(dateString, inputFormatter)
+        //specifying output format
         val outputFormatter =
-            DateTimeFormatter.ofPattern("MMM d, yyyy, hh:mm a") // Oct 1, 2024, 02:30 AM
+            DateTimeFormatter.ofPattern("MMM d, yyyy, hh:mm a")
+        //formating and returning according to the specified format
         return dateTime.format(outputFormatter)
     }
 }

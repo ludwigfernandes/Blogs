@@ -1,15 +1,10 @@
 package com.example.blogs
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,30 +19,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
+import coil.compose.AsyncImage
 import com.example.blogs.data.ArticlesItem
-import org.apache.commons.text.StringEscapeUtils
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ArticlesHome(navController: NavHostController, viewModel: HomeViewModel) {
+
+    //.collectAsState() is a Compose function that collects values from a Flow and converts it into a State object.
+    //by help isNetworkAvailable to be assigned directly to the value of state from collectAsState, making it reactive
     val isNetworkAvailable by viewModel.isNetworkAvailable.collectAsState()
-
-
-
-
 
     if (isNetworkAvailable) {
         val articles = viewModel.articles.value
@@ -62,8 +50,6 @@ fun ArticlesHome(navController: NavHostController, viewModel: HomeViewModel) {
                 modifier = Modifier.padding(10.dp)
             ) {
                 items(articles) { article ->
-                    Log.d("TAG", article?.dateGmt!!)
-
                     ArticleItem(
                         article!!,
                         onClick = {
@@ -75,18 +61,7 @@ fun ArticlesHome(navController: NavHostController, viewModel: HomeViewModel) {
                 }
             }
         } else {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-                LottieAnimation(
-                    modifier = Modifier.fillMaxWidth(),
-                    composition = composition,
-                    iterations = LottieConstants.IterateForever
-                )
-            }
+            Loading()
         }
     }else{
         OfflineScreen()
@@ -96,6 +71,9 @@ fun ArticlesHome(navController: NavHostController, viewModel: HomeViewModel) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ArticleItem(article: ArticlesItem, onClick: () -> Unit, viewModel: HomeViewModel) {
+
+    val showShimmer = remember { mutableStateOf(true) }
+
     Card(
         modifier = Modifier.padding(vertical = 6.dp),
         onClick = { onClick() },
@@ -103,12 +81,14 @@ fun ArticleItem(article: ArticlesItem, onClick: () -> Unit, viewModel: HomeViewM
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-            Image(
-                painter = rememberAsyncImagePainter(model = article.jetpackFeaturedMediaUrl),
-                contentDescription = "Agent Image",
+            AsyncImage(
+                model = article.jetpackFeaturedMediaUrl,
+                contentDescription = "Featured Image",
                 modifier = Modifier
+                    .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value))
                     .height(150.dp)
                     .fillMaxWidth(),
+                onSuccess = { showShimmer.value = false },
                 contentScale = ContentScale.FillWidth,
             )
             Text(
@@ -119,7 +99,9 @@ fun ArticleItem(article: ArticlesItem, onClick: () -> Unit, viewModel: HomeViewM
             Box(modifier = Modifier.fillMaxWidth()){
                 Text(
                     text = viewModel.formatDate(article.dateGmt!!),
-                    modifier = Modifier.padding(10.dp).align(Alignment.TopStart),
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .align(Alignment.TopStart),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
