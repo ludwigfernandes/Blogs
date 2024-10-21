@@ -84,5 +84,8 @@ dependencies {
     implementation("org.apache.commons:commons-text:1.10.0")
     //WebView
     implementation("androidx.webkit:webkit:1.12.1")
+    //Lottie
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
+
 
 }
