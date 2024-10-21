@@ -1,7 +1,10 @@
 package com.example.blogs
 
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -10,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import org.apache.commons.text.StringEscapeUtils
 
 
 @Composable
@@ -20,20 +25,13 @@ fun ArticlesDetail(navController: NavHostController, viewModel: HomeViewModel) {
 
 
     if (selectedArticle != null) {
-        Column () {
-            Text(
-                text = selectedArticle.title?.rendered ?: "Unknown Agent",
-                modifier = Modifier.padding(8.dp)
-            )
-
-            Image(
-                painter = rememberAsyncImagePainter(model = selectedArticle.jetpackFeaturedMediaUrl),
-                contentDescription = "Agent Image",
-                modifier = Modifier
-                    .height(150.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )
-        }
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                WebView(context).apply {
+                    loadUrl(selectedArticle.link!!)
+                }
+            }
+        )
     }
 }

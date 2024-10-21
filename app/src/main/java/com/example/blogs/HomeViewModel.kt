@@ -9,6 +9,7 @@ import com.example.blogs.data.Articles
 import com.example.blogs.data.ArticlesItem
 import com.example.blogs.network.RetrofitInstance
 import kotlinx.coroutines.launch
+import org.apache.commons.text.StringEscapeUtils
 import retrofit2.Call
 import retrofit2.Response
 
@@ -24,7 +25,7 @@ class HomeViewModel : ViewModel() {
             val call = RetrofitInstance.apiService.getAllArticles()
             call.enqueue(object : Callback<Articles> {
                 override fun onResponse(call: Call<Articles>, response: Response<Articles>) {
-                    if (response.isSuccessful){
+                    if (response.isSuccessful) {
                         _articles.value = response.body()
                     }
                 }
@@ -36,7 +37,12 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun selectArticle(article: ArticlesItem){
-        _selectedArticle.value=article
+    fun selectArticle(article: ArticlesItem) {
+        _selectedArticle.value = article
+    }
+
+    fun cleanHTMLContent(content: String?): String {
+        val title = StringEscapeUtils.unescapeHtml4(content)
+        return title
     }
 }
