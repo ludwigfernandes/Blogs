@@ -4,6 +4,8 @@ plugins {
 
     //Parcelize plugin
     id("kotlin-parcelize")
+    //KSP
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
 
 android {
@@ -86,6 +88,10 @@ dependencies {
     implementation("androidx.webkit:webkit:1.12.1")
     //Lottie
     implementation("com.airbnb.android:lottie-compose:6.0.0")
-
+    //Room
+    implementation("androidx.room:room-runtime:2.5.2")
+    implementation("androidx.core:core-ktx:1.12.0")
+    ksp("androidx.room:room-compiler:2.5.2")
+    implementation("androidx.room:room-ktx:2.5.2")
 
 }
