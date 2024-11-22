@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,11 +54,11 @@ fun ArticlesDetail(navController: NavHostController, viewModel: HomeViewModel) {
             }
         )
     } else {
-        Loading()
+        CircularProgressIndicator()
     }
 
     if (articleLoading) {
-        Loading()
+        CircularProgressIndicator()
     }
 }
 
